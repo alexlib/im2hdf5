@@ -170,6 +170,7 @@ def listImageFiles(dirName='.', imageExt='tif', dataStart=0, dataEnd=None, baseN
     The issue with this is that it will return other files of similar extension, which means that the raw data directory shouldn't have any other image files in it.
     
     """ 
+    
     # This gets a list of all the files the directory named dirName
     dirContents = os.listdir(dirName)
     
@@ -182,6 +183,10 @@ def listImageFiles(dirName='.', imageExt='tif', dataStart=0, dataEnd=None, baseN
     # Make the file list
     if baseName is not None:
         fileList = [fileName for fileName in fileList if re.search('%s\d{%d}' %(baseName, numDig), fileName) is not None]
+    
+    # Remove dot from the image extension 
+    imageExt = imageExt.replace(".", "")
+    
     # This returns the section of the image list between the start and end image numbers.
     #pdb.set_trace()
     if dataEnd is None:
@@ -189,7 +194,32 @@ def listImageFiles(dirName='.', imageExt='tif', dataStart=0, dataEnd=None, baseN
     if dataStart is None:
         dataStart = 0
     
-    return fileList[dataStart : dataEnd + 1]
+    # Create a new empty list to hold the file names
+    output_file_list = [];
+    
+    # Number format
+    num_format = '%0' + str(numDig) + 'd'
+    
+    # Populate the list
+    for k in range(dataStart, dataEnd + 1):
+        
+        # Build the file name
+        file_name = baseName + num2str(k, num_format) + '.' + imageExt
+        
+        # Appen the file name to the list
+        output_file_list.append(file_name)
+    
+    return output_file_list
+    
+    
+def num2str(number, num_format):
+    # This function formats a number as a string
+    
+    # Replace the percent sign with a colon to be compatible with python
+    return ('{' + num_format.replace('%', ':') + '}').format(number)
+        
+   
+        
        
 # These lines allow the code to be run from the command line.
 if __name__ == "__main__":
